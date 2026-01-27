@@ -1,21 +1,28 @@
 :root{
-  --bg:#0b0f16;
-  --panel:#111827;
-  --panel2:#0f172a;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
+  --bg:#070a10;
+  --panel:#0f172a;
   --border:#223047;
-  --good:#22c55e;
-  --bad:#ef4444;
-  --warn:#f59e0b;
+  --text:#e5e7eb;
+  --muted:#a3a3a3;
+
+  --paper:#0b1220;
+  --ink:#eaeaea;
+
+  --common:#6b7280;
+  --rare:#f59e0b;
+  --epic:#a78bfa;
+  --legend:#f472b6;
+
   --blue:#60a5fa;
+  --bad:#ef4444;
+  --good:#22c55e;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  background:linear-gradient(180deg, #070a10, var(--bg));
+  background: radial-gradient(1200px 800px at 20% 10%, #111827 0%, var(--bg) 60%);
   color:var(--text);
   font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
@@ -26,13 +33,11 @@ body{
   justify-content:space-between;
   padding:14px 18px;
   border-bottom:1px solid var(--border);
-  background:rgba(17,24,39,0.7);
+  background:rgba(15,23,42,0.7);
   backdrop-filter: blur(6px);
-  position:sticky;
-  top:0;
-  z-index:10;
+  position:sticky; top:0; z-index:10;
 }
-.title{font-weight:800; letter-spacing:0.5px}
+.title{font-weight:900; letter-spacing:.4px}
 .status{display:flex; gap:18px; color:var(--muted); font-size:14px}
 .status b{color:var(--text)}
 
@@ -44,139 +49,61 @@ body{
 }
 
 .panel{
-  background:rgba(17,24,39,0.85);
+  background:rgba(15,23,42,0.86);
   border:1px solid var(--border);
   border-radius:16px;
   padding:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  box-shadow:0 12px 28px rgba(0,0,0,0.28);
   min-height: calc(100vh - 120px);
 }
 .panel.center{min-height:unset}
 h2{margin:4px 0 10px 0; font-size:18px}
-h3{margin:8px 0; font-size:14px; color:var(--muted); font-weight:700}
+h3{margin:8px 0; font-size:14px; color:var(--muted); font-weight:800}
 
 .hud{
   border:1px solid var(--border);
   border-radius:12px;
-  background:rgba(15,23,42,0.7);
+  background:rgba(11,18,32,0.6);
   padding:10px;
 }
 .hudRow{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
 }
 .hudRow.small{font-size:13px; color:var(--muted)}
 .hudRow b{color:var(--text)}
 
 .zone{margin-top:10px}
+.cardRow{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; min-height:130px}
 
-.cardRow{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:flex-start;
-  min-height:110px;
-}
-
-.card{
-  width:150px;
-  border:1px solid var(--border);
-  border-radius:14px;
-  overflow:hidden;
-  background:rgba(15,23,42,0.8);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
-  cursor:pointer;
-  user-select:none;
-  transition: transform .12s ease, outline .12s ease;
-  position:relative;
-}
-.card:hover{transform: translateY(-2px)}
-.card.selected{
-  outline:2px solid var(--blue);
-}
-
-.card img{
-  width:100%;
-  height:95px;
-  object-fit:cover;
-  display:block;
-  background:#0b1220;
-}
-.card .meta{
-  padding:8px 8px 10px 8px;
-}
-.card .name{
-  font-weight:800;
-  font-size:13px;
-  line-height:1.1;
-  margin-bottom:6px;
-}
-.card .line{
-  display:flex;
-  justify-content:space-between;
-  font-size:12px;
-  color:var(--muted);
-}
-.badge{
-  position:absolute;
-  top:8px;
-  left:8px;
-  font-size:11px;
-  padding:3px 7px;
-  border-radius:999px;
-  border:1px solid rgba(0,0,0,0.2);
-  background:rgba(0,0,0,0.45);
-  backdrop-filter: blur(4px);
-}
-.badge.good{color:var(--good); border-color:rgba(34,197,94,0.3)}
-.badge.warn{color:var(--warn); border-color:rgba(245,158,11,0.3)}
-.badge.epic{color:#a78bfa; border-color:rgba(167,139,250,0.3)}
-.badge.legend{color:#f472b6; border-color:rgba(244,114,182,0.3)}
-
-.smallTag{
-  display:inline-block;
-  font-size:11px;
-  color:var(--muted);
-  margin-top:6px;
-}
-
-.controls{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
-}
+.controls{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px}
 button{
   border:1px solid var(--border);
-  background:rgba(15,23,42,0.8);
+  background:rgba(11,18,32,0.85);
   color:var(--text);
   padding:10px 12px;
   border-radius:12px;
   cursor:pointer;
-  font-weight:700;
+  font-weight:800;
 }
-button:hover{filter:brightness(1.05)}
+button:hover{filter:brightness(1.06)}
 button:disabled{opacity:0.5; cursor:not-allowed}
 button.primary{border-color:rgba(96,165,250,0.45)}
-button.danger{border-color:rgba(239,68,68,0.5); color:#fecaca}
+button.danger{border-color:rgba(239,68,68,0.55); color:#fecaca}
 
 .hint{
   color:var(--muted);
   font-size:13px;
   padding:10px;
-  border:1px dashed rgba(156,163,175,0.3);
+  border:1px dashed rgba(163,163,163,0.25);
   border-radius:12px;
   margin-bottom:10px;
-  background:rgba(15,23,42,0.35);
+  background:rgba(11,18,32,0.35);
 }
-
 .targetBox{
   padding:10px;
   border:1px solid var(--border);
   border-radius:12px;
-  background:rgba(15,23,42,0.55);
+  background:rgba(11,18,32,0.55);
 }
 .subhint{color:var(--muted); font-size:12px; margin-top:8px}
 
@@ -186,7 +113,7 @@ button.danger{border-color:rgba(239,68,68,0.5); color:#fecaca}
   overflow:auto;
   border:1px solid var(--border);
   border-radius:12px;
-  background:rgba(15,23,42,0.5);
+  background:rgba(11,18,32,0.55);
   padding:10px;
   font-size:13px;
   line-height:1.35;
@@ -202,8 +129,127 @@ button.danger{border-color:rgba(239,68,68,0.5); color:#fecaca}
   border-top:1px solid var(--border);
 }
 
-.ghost{opacity:0.35}
-.mini .card{
-  width:88px;
+/* ======= MTG CARD ======= */
+.mtg-card{
+  width:176px;
+  cursor:pointer;
+  user-select:none;
+  transition: transform .12s ease, outline .12s ease;
 }
-.mini .card img{height:50px}
+.mtg-card:hover{transform: translateY(-2px)}
+.mtg-card.selected{outline:2px solid var(--blue); border-radius:16px}
+
+.mtg-frame{
+  border-radius:16px;
+  overflow:hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.35);
+  position:relative;
+}
+.mtg-card.tapped .mtg-frame{
+  transform: rotate(-90deg);
+  transform-origin: 40% 40%;
+}
+
+.mtg-titlebar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 10px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.04));
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.mtg-title{
+  font-weight:950;
+  font-size:13px;
+  max-width:125px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mtg-cost{
+  font-weight:950;
+  font-size:12px;
+  padding:2px 7px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(0,0,0,0.25);
+}
+
+.mtg-art{
+  height:112px;
+  background: rgba(0,0,0,0.25);
+}
+.mtg-art img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:#0b1220;
+}
+
+.mtg-typeline{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:6px 10px;
+  font-size:11px;
+  color:rgba(255,255,255,0.85);
+  border-top:1px solid rgba(255,255,255,0.08);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+.mtg-type{
+  max-width:120px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mtg-rarity{
+  font-weight:900;
+  opacity:0.9;
+}
+
+.mtg-textbox{
+  padding:8px 10px 10px;
+  background: rgba(0,0,0,0.16);
+  min-height:86px;
+}
+.mtg-rules{
+  font-size:12px;
+  color:rgba(255,255,255,0.9);
+  line-height:1.25;
+  margin-bottom:8px;
+}
+.mtg-flavor{
+  font-size:11px;
+  color:rgba(255,255,255,0.65);
+  font-style:italic;
+  line-height:1.2;
+}
+
+.mtg-stats{
+  position:absolute;
+  right:8px;
+  bottom:8px;
+}
+.pt{
+  font-weight:950;
+  font-size:12px;
+  padding:3px 7px;
+  border-radius:10px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.12);
+}
+
+/* raridade na borda */
+.rarity-comum{box-shadow: 0 0 0 2px rgba(107,114,128,0.25) inset}
+.rarity-rara{box-shadow: 0 0 0 2px rgba(245,158,11,0.25) inset}
+.rarity-épica, .rarity-epica{box-shadow: 0 0 0 2px rgba(167,139,250,0.25) inset}
+.rarity-lendária, .rarity-lendaria{box-shadow: 0 0 0 2px rgba(244,114,182,0.25) inset}
+
+.ghost{opacity:0.35}
+.mini .mtg-card{width:110px}
+.mini .mtg-art{height:60px}
+.mini .mtg-textbox{display:none}

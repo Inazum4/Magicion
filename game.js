@@ -254,7 +254,7 @@ function cardEl(card, opts={}) {
   const badgeCls = card.rarityBadge || "good";
   div.innerHTML = `
     <div class="badge ${badgeCls}">${card.rarity}</div>
-    <img src="${card.img || FALLBACK_IMG}" alt="">
+    <img referrerpolicy="no-referrer" loading="lazy" src="${card.img || FALLBACK_IMG}" alt="">
     <div class="meta">
       <div class="name">${card.name}</div>
       <div class="line"><span>⚡ ${card.cost}</span><span>ATK ${card.atk}</span></div>

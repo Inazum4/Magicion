@@ -257,25 +257,43 @@ function updateHUD() {
   $("btnAttackFace").disabled = !isPlayerTurn || state.busy || state.phase !== "combat" || !state.selectedAttackerId;
 }
 
-function cardEl(card, opts={}) {
+function cardEl(card, opts = {}) {
   const div = document.createElement("div");
-  div.className = "card";
+  div.className = "mtg-card";
   div.dataset.id = card.id;
 
-  const badgeCls = card.rarityBadge || "good";
+  if (opts.selected) div.classList.add("selected");
+  if (card.exhausted) div.classList.add("tapped");
+
   div.innerHTML = `
-    <div class="badge ${badgeCls}">${card.rarity}</div>
-    <img referrerpolicy="no-referrer" loading="lazy" src="${card.img || FALLBACK_IMG}" alt="">
-    <div class="meta">
-      <div class="name">${card.name}</div>
-      <div class="line"><span>⚡ ${card.cost}</span><span>ATK ${card.atk}</span></div>
-      <div class="line"><span>HP ${card.hp}/${card.maxHp}</span><span>DEF ${card.def}</span></div>
-      <div class="smallTag">${card.abilityKey}: ${card.abilityText}</div>
+    <div class="mtg-frame rarity-${(card.rarity || "Comum").toLowerCase()}">
+      <div class="mtg-titlebar">
+        <div class="mtg-title">${card.name}</div>
+        <div class="mtg-cost">⚡${card.cost}</div>
+      </div>
+
+      <div class="mtg-art">
+        <img referrerpolicy="no-referrer" loading="lazy" src="${card.img || FALLBACK_IMG}" alt="">
+      </div>
+
+      <div class="mtg-typeline">
+        <div class="mtg-type">Criatura — ${card.abilityKey}</div>
+        <div class="mtg-rarity">${card.rarity}</div>
+      </div>
+
+      <div class="mtg-textbox">
+        <div class="mtg-rules">${card.abilityText}</div>
+        <div class="mtg-flavor">"${card.rarity === "Lendária" ? "Uma presença que dobra o destino." : "O caos sempre cobra um preço."}"</div>
+      </div>
+
+      <div class="mtg-stats">
+        <div class="pt">${Math.round(card.atk / 500)}/${card.hp}</div>
+      </div>
     </div>
   `;
 
-  if (opts.selectable) div.classList.add("selectable");
-  if (opts.selected) div.classList.add("selected");
+  return div;
+}
 
   // marcador "exausto"
   if (card.exhausted) {

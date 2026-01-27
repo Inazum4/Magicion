@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Card Duel (MVP)</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">Card Duel (MVP)</div>
+    <div class="status">
+      <div><b>Turno:</b> <span id="turnOwner">-</span></div>
+      <div><b>Fase:</b> <span id="phase">-</span></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- IA -->
+    <section class="panel">
+      <h2>IA</h2>
+      <div class="hud">
+        <div class="hudRow">
+          <span>HP:</span><b id="aiHP">20</b>
+          <span>Energia:</span><b id="aiEnergy">0</b>/<span id="aiEnergyMax">0</span>
+        </div>
+        <div class="hudRow small">
+          <span>Deck:</span><b id="aiDeckCount">0</b>
+          <span>Mão:</span><b id="aiHandCount">0</b>
+          <span>Cemitério:</span><b id="aiGraveCount">0</b>
+        </div>
+      </div>
+
+      <div class="zone">
+        <h3>Campo da IA</h3>
+        <div id="aiField" class="cardRow"></div>
+      </div>
+
+      <div class="zone">
+        <h3>Mão da IA (oculta)</h3>
+        <div class="cardRow ghost" id="aiHandGhost"></div>
+      </div>
+    </section>
+
+    <!-- LOG / CONTROLES -->
+    <section class="panel center">
+      <h2>Controle</h2>
+
+      <div class="controls">
+        <button id="btnNewGame">Novo jogo</button>
+        <button id="btnDraw">Comprar</button>
+        <button id="btnEndTurn" class="primary">Finalizar turno</button>
+      </div>
+
+      <div class="hint" id="hint">
+        Clique numa carta da sua mão para invocar. Clique numa criatura no seu campo para atacar.
+      </div>
+
+      <div class="targetBox">
+        <button id="btnAttackFace" class="danger">Atacar direto (HP da IA)</button>
+        <div class="subhint">Para atacar uma criatura, clique na sua criatura e depois na criatura inimiga.</div>
+      </div>
+
+      <div class="log" id="log"></div>
+    </section>
+
+    <!-- VOCÊ -->
+    <section class="panel">
+      <h2>Você</h2>
+      <div class="hud">
+        <div class="hudRow">
+          <span>HP:</span><b id="pHP">20</b>
+          <span>Energia:</span><b id="pEnergy">0</b>/<span id="pEnergyMax">0</span>
+        </div>
+        <div class="hudRow small">
+          <span>Deck:</span><b id="pDeckCount">0</b>
+          <span>Mão:</span><b id="pHandCount">0</b>
+          <span>Cemitério:</span><b id="pGraveCount">0</b>
+        </div>
+      </div>
+
+      <div class="zone">
+        <h3>Seu campo</h3>
+        <div id="pField" class="cardRow"></div>
+      </div>
+
+      <div class="zone">
+        <h3>Sua mão</h3>
+        <div id="pHand" class="cardRow"></div>
+      </div>
+
+      <div class="zone">
+        <h3>Seu cemitério</h3>
+        <div id="pGrave" class="cardRow mini"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    MVP: turnos, deck, IA, imagens aleatórias (Danbooru). Ajuste tags em <code>game.js</code>.
+  </footer>
+
+  <script src="./game.js"></script>
+</body>
+</html>

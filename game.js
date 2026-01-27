@@ -63,17 +63,28 @@ function log(msg, cls="") {
 async function fetchRandomImageUrl() {
   const url = `https://danbooru.donmai.us/posts.json?limit=1&random=true&tags=${encodeURIComponent(DANBOORU_TAGS)}`;
   try {
-    const res = await fetch(url, { method: "GET" });
+    const res = await fetch(url);
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) return null;
 
     const post = data[0];
-    // file_url pode vir null em alguns casos
-    return post.file_url || post.large_file_url || post.preview_file_url || null;
+
+    // Prioriza versões mais leves (mais chance de carregar)
+    let u = post.large_file_url || post.file_url || post.preview_file_url || null;
+    if (!u) return null;
+
+    // Às vezes pode vir começando com // (protocol-relative)
+    if (u.startsWith("//")) u = "https:" + u;
+
+    // Se vier relativo (raro), prefixa
+    if (u.startsWith("/")) u = "https://danbooru.donmai.us" + u;
+
+    return u;
   } catch (e) {
     return null;
   }
 }
+
 
 /** ========= GERADOR DE CARTAS ========= **/
 const NAME_A = ["Entidade", "Guerreira", "Feiticeira", "Demônio", "Anjo", "Caçador", "Bruxa", "Gladiador", "Serafim", "Lâmina"];

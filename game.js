@@ -49,6 +49,12 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+function createId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `card-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`;
+}
 
 function log(msg, cls="") {
   const el = $("log");
@@ -161,7 +167,7 @@ function generateCardBase() {
   const ability = pick(ABILITIES);
 
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     name,
     img: null,
     rarity: rarity.key,
@@ -291,9 +297,6 @@ function cardEl(card, opts = {}) {
       </div>
     </div>
   `;
-
-  return div;
-}
 
   // marcador "exausto"
   if (card.exhausted) {

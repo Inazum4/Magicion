@@ -1,7 +1,6 @@
 /* ================================
    CARD DUEL MVP (Turnos + Deck + IA)
-   - HTML/CSS/JS puro
-   - Imagens aleatórias do Danbooru
+   Estilo visual: MTG-like
    ================================ */
 
 /** ========= CONFIG ========= **/
@@ -10,20 +9,18 @@ const GAME = {
   startHand: 4,
   maxField: 4,
   deckSize: 14,
-  energyPerTurnCap: 10,   // energia máxima cresce até isso
+  energyPerTurnCap: 10,
   maxHand: 8,
 };
 
-// Tags do Danbooru:
-// - Você pode trocar por temas: "fantasy", "armor", "magic", "sword", etc.
-// - rating:explicit libera NSFW
-// - negativas removem conteúdo com menor
+// Danbooru tags
+// rating:explicit => NSFW
+// negativos => bloqueio de tags relacionadas a menor
 const DANBOORU_TAGS = [
   "rating:explicit",
-  // temas (opcionais)
+  // temas opcionais:
   // "fantasy", "magic", "warrior",
 
-  // bloqueios (importante)
   "-loli", "-shota", "-child", "-young", "-toddler", "-infant",
 ].join(" ");
 
@@ -69,14 +66,12 @@ async function fetchRandomImageUrl() {
 
     const post = data[0];
 
-    // Prioriza versões mais leves (mais chance de carregar)
+    // Prioriza uma versão mais "carregável"
     let u = post.large_file_url || post.file_url || post.preview_file_url || null;
     if (!u) return null;
 
-    // Às vezes pode vir começando com // (protocol-relative)
+    // Ajustes de URL (às vezes vem // ou /...)
     if (u.startsWith("//")) u = "https:" + u;
-
-    // Se vier relativo (raro), prefixa
     if (u.startsWith("/")) u = "https://danbooru.donmai.us" + u;
 
     return u;
@@ -85,16 +80,15 @@ async function fetchRandomImageUrl() {
   }
 }
 
-
 /** ========= GERADOR DE CARTAS ========= **/
 const NAME_A = ["Entidade", "Guerreira", "Feiticeira", "Demônio", "Anjo", "Caçador", "Bruxa", "Gladiador", "Serafim", "Lâmina"];
 const NAME_B = ["Caótico", "Sombrio", "Arcano", "Vermelho", "Abissal", "Celestial", "Feral", "Maldito", "Místico", "Dourado"];
 
 const RARITIES = [
-  { key:"Comum",   badge:"good",   mult:1.0,  weight:55 },
-  { key:"Rara",    badge:"warn",   mult:1.25, weight:28 },
-  { key:"Épica",   badge:"epic",   mult:1.55, weight:13 },
-  { key:"Lendária",badge:"legend", mult:2.05, weight:4  },
+  { key:"Comum",   badge:"comum",   mult:1.0,  weight:55 },
+  { key:"Rara",    badge:"rara",    mult:1.25, weight:28 },
+  { key:"Épica",   badge:"epica",   mult:1.55, weight:13 },
+  { key:"Lendária",badge:"lendaria",mult:2.05, weight:4  },
 ];
 
 function rollRarity() {
@@ -107,70 +101,64 @@ function rollRarity() {
   return RARITIES[0];
 }
 
-// Habilidades simples (efeito aplicado em combate)
+// Habilidades simples (efeitos em combate)
 const ABILITIES = [
   {
     key: "Fúria",
     text: "+300 ATK quando ataca.",
-    onAttack: (card, ctx) => ({ atkBonus: 300, dmgBonus: 0 }),
+    onAttack: () => ({ atkBonus: 300, dmgBonus: 0 }),
   },
   {
     key: "Perfurante",
     text: "Se destruir um inimigo, causa +2 de dano ao HP.",
-    afterCombat: (card, ctx) => {
-      if (ctx.killedDefender) return { faceDamageBonus: 2 };
-      return { faceDamageBonus: 0 };
-    }
+    afterCombat: (card, ctx) => (ctx.killedDefender ? { faceDamageBonus: 2 } : { faceDamageBonus: 0 })
   },
   {
     key: "Escudo",
     text: "Reduz 2 de dano recebido.",
-    onDefend: (card, ctx) => ({ dmgReduction: 2 }),
+    onDefend: () => ({ dmgReduction: 2 }),
   },
   {
     key: "Sanguessuga",
     text: "Cura 2 de HP quando destrói uma criatura.",
-    afterCombat: (card, ctx) => {
-      if (ctx.killedDefender) return { heal: 2 };
-      return { heal: 0 };
-    }
+    afterCombat: (card, ctx) => (ctx.killedDefender ? { heal: 2 } : { heal: 0 })
   },
   {
     key: "Venenosa",
     text: "Ao atacar, causa +1 de dano direto ao HP (extra).",
-    onAttack: (card, ctx) => ({ atkBonus: 0, dmgBonus: 1 }),
+    onAttack: () => ({ atkBonus: 0, dmgBonus: 1 }),
   },
-  {
-    key: "Vazia",
-    text: "Sem habilidade.",
-  }
+  { key: "Vazia", text: "Sem habilidade." }
 ];
 
 function generateCardBase() {
   const rarity = rollRarity();
   const name = `${pick(NAME_A)} ${pick(NAME_B)}`;
 
-  // custo (energia) baseado na raridade
+  // custo baseado em raridade
   const cost = clamp(Math.round(randInt(1, 4) * rarity.mult), 1, 7);
 
-  // stats escalam com raridade e custo
+  // stats
   const base = 400 + cost * 220;
   const atk = Math.round((base + randInt(-120, 180)) * rarity.mult);
   const def = Math.round((base + randInt(-150, 150)) * rarity.mult);
 
   const ability = pick(ABILITIES);
 
+  // “vida” da criatura (simplificado)
+  const hp = Math.max(1, Math.round(def / 250));
+
   return {
     id: crypto.randomUUID(),
     name,
     img: null,
     rarity: rarity.key,
-    rarityBadge: rarity.badge,
+    rarityBadge: rarity.badge, // comum/rara/epica/lendaria
     cost,
     atk,
     def,
-    hp: Math.max(1, Math.round((def / 250))), // HP da criatura no campo (simples)
-    maxHp: Math.max(1, Math.round((def / 250))),
+    hp,
+    maxHp: hp,
     abilityKey: ability.key,
     abilityText: ability.text,
     _ability: ability,
@@ -229,7 +217,6 @@ function shuffle(arr) {
 function opponentOf(side) {
   return side === "player" ? "ai" : "player";
 }
-
 function getP(side){ return state[side]; }
 
 function updateHUD() {
@@ -250,7 +237,6 @@ function updateHUD() {
   $("aiHandCount").textContent = state.ai.hand.length;
   $("aiGraveCount").textContent = state.ai.grave.length;
 
-  // botões
   const isPlayerTurn = state.current === "player";
   $("btnDraw").disabled = !isPlayerTurn || state.busy || state.phase !== "main";
   $("btnEndTurn").disabled = !isPlayerTurn || state.busy;
@@ -265,8 +251,14 @@ function cardEl(card, opts = {}) {
   if (opts.selected) div.classList.add("selected");
   if (card.exhausted) div.classList.add("tapped");
 
+  const rarityClass = `rarity-${(card.rarityBadge || "comum")}`;
+
+  // “P/T” mais MTG: atk vira power, hp vira toughness
+  const power = clamp(Math.round(card.atk / 500), 0, 20);
+  const tough = clamp(card.hp, 1, 20);
+
   div.innerHTML = `
-    <div class="mtg-frame rarity-${(card.rarity || "Comum").toLowerCase()}">
+    <div class="mtg-frame ${rarityClass}">
       <div class="mtg-titlebar">
         <div class="mtg-title">${card.name}</div>
         <div class="mtg-cost">⚡${card.cost}</div>
@@ -287,24 +279,10 @@ function cardEl(card, opts = {}) {
       </div>
 
       <div class="mtg-stats">
-        <div class="pt">${Math.round(card.atk / 500)}/${card.hp}</div>
+        <div class="pt">${power}/${tough}</div>
       </div>
     </div>
   `;
-
-  return div;
-}
-
-  // marcador "exausto"
-  if (card.exhausted) {
-    const tag = document.createElement("div");
-    tag.className = "badge";
-    tag.style.right = "8px";
-    tag.style.left = "auto";
-    tag.style.color = "#9ca3af";
-    tag.textContent = "exausta";
-    div.appendChild(tag);
-  }
 
   return div;
 }
@@ -328,7 +306,7 @@ function renderAll() {
     pField.appendChild(el);
   });
 
-  // player grave (mini)
+  // player grave
   const pGrave = $("pGrave");
   pGrave.innerHTML = "";
   state.player.grave.slice(-6).forEach(c => {
@@ -345,17 +323,32 @@ function renderAll() {
     aiField.appendChild(el);
   });
 
-  // mão da IA oculta (fantasmas)
+  // ai hand ghost (oculto)
   const ghost = $("aiHandGhost");
   ghost.innerHTML = "";
   for (let i=0;i<state.ai.hand.length;i++){
     const g = document.createElement("div");
-    g.className = "card";
-    g.style.width = "90px";
+    g.className = "mtg-card";
     g.style.opacity = "0.35";
     g.innerHTML = `
-      <img src="${FALLBACK_IMG}" alt="">
-      <div class="meta"><div class="name">??</div><div class="line"><span>...</span><span>...</span></div></div>
+      <div class="mtg-frame rarity-comum">
+        <div class="mtg-titlebar">
+          <div class="mtg-title">???</div>
+          <div class="mtg-cost">⚡?</div>
+        </div>
+        <div class="mtg-art">
+          <img referrerpolicy="no-referrer" loading="lazy" src="${FALLBACK_IMG}" alt="">
+        </div>
+        <div class="mtg-typeline">
+          <div class="mtg-type">Carta — Oculta</div>
+          <div class="mtg-rarity">?</div>
+        </div>
+        <div class="mtg-textbox">
+          <div class="mtg-rules">Conteúdo desconhecido.</div>
+          <div class="mtg-flavor">"A IA planeja em silêncio."</div>
+        </div>
+        <div class="mtg-stats"><div class="pt">?/?</div></div>
+      </div>
     `;
     ghost.appendChild(g);
   }
@@ -369,23 +362,20 @@ function startTurn(side) {
   state.phase = "main";
   state.selectedAttackerId = null;
 
-  // aumenta energia máxima + recarrega energia
   p.energyMax = clamp(p.energyMax + 1, 0, GAME.energyPerTurnCap);
   p.energy = p.energyMax;
 
-  // desexaustar criaturas do dono
+  // desvira criaturas do dono
   p.field.forEach(c => c.exhausted = false);
 
   log(`--- Turno ${state.turn}: ${side === "player" ? "Você" : "IA"} ---`, "muted");
 
-  // compra automática no começo do turno (para fluidez)
+  // compra automática no início
   drawCard(side, true);
 
   renderAll();
 
-  if (side === "ai") {
-    aiTakeTurn();
-  }
+  if (side === "ai") aiTakeTurn();
 }
 
 function endTurn() {
@@ -402,7 +392,6 @@ function endTurn() {
 async function drawCard(side, silent=false) {
   const p = getP(side);
   if (p.deck.length === 0) {
-    // “fatiga” leve
     p.hp -= 1;
     if (!silent) log(`${p.name} tentou comprar, mas o deck acabou! Sofre 1 de dano.`, "bad");
     checkGameOver();
@@ -414,7 +403,6 @@ async function drawCard(side, silent=false) {
     if (!silent) log(`${p.name} está com a mão cheia. Uma carta foi para o cemitério.`, "muted");
     return;
   }
-
   const c = p.deck.pop();
   p.hand.push(c);
   if (!silent) log(`${p.name} comprou 1 carta.`, "good");
@@ -443,40 +431,42 @@ async function onClickHandCard(cardId) {
     return;
   }
 
-  // invocar
   p.energy -= c.cost;
   p.hand = p.hand.filter(x => x.id !== cardId);
-  c.exhausted = true; // entra exausta
+  c.exhausted = true;
   p.field.push(c);
 
-  log(`Você invocou "${c.name}" (⚡${c.cost}).`, "good");
+  log(`Você conjurou "${c.name}" (⚡${c.cost}).`, "good");
   renderAll();
 }
 
 function onClickFieldCard(side, cardId) {
   if (state.busy) return;
 
-  // se clicar numa criatura sua: selecionar atacante
+  // clicou em criatura sua => selecionar atacante
   if (state.current === "player" && side === "player") {
     if (state.phase !== "combat") {
-      log("Você só pode atacar na fase de combate. (Clique em 'Finalizar turno' para passar ou use combate no seu turno)", "muted");
-      // para facilitar, se estiver na main, vamos mudar pra combat automaticamente
+      // atalho: se estiver na main, muda pra combat
       if (state.phase === "main") {
         state.phase = "combat";
         log("Fase alterada para COMBATE.", "muted");
         renderAll();
+      } else {
+        log("Você só pode atacar na fase de combate.", "muted");
       }
       return;
     }
+
     const c = findCard(state.player.field, cardId);
     if (!c) return;
     if (c.exhausted) { log("Essa criatura está exausta e não pode atacar.", "bad"); return; }
+
     state.selectedAttackerId = (state.selectedAttackerId === cardId) ? null : cardId;
     renderAll();
     return;
   }
 
-  // se clicar numa criatura inimiga: atacar ela (desde que tenha atacante selecionado)
+  // clicou em criatura inimiga => atacar ela
   if (state.current === "player" && side === "ai") {
     if (state.phase !== "combat") return;
     if (!state.selectedAttackerId) return;
@@ -507,7 +497,7 @@ function resolveCombat({ attackerSide, attackerId, defenderId=null, direct=false
     return;
   }
 
-  // aplicar habilidade onAttack
+  // habilidade: ataque
   let atkBonus = 0;
   let dmgBonus = 0;
 
@@ -520,13 +510,12 @@ function resolveCombat({ attackerSide, attackerId, defenderId=null, direct=false
   const attackValue = attacker.atk + atkBonus;
 
   if (direct) {
-    const dmg = Math.max(0, Math.round(attackValue / 700)) + dmgBonus; // dano direto simples
+    const dmg = Math.max(0, Math.round(attackValue / 700)) + dmgBonus;
     D.hp -= dmg;
     attacker.exhausted = true;
 
     log(`${A.name} atacou direto com "${attacker.name}" e causou ${dmg} de dano!`, "bad");
 
-    // afterCombat (para dano extra/curas)
     if (attacker._ability?.afterCombat) {
       const extra = attacker._ability.afterCombat(attacker, { killedDefender:false });
       if (extra?.faceDamageBonus) {
@@ -549,14 +538,13 @@ function resolveCombat({ attackerSide, attackerId, defenderId=null, direct=false
   const defender = findCard(D.field, defenderId);
   if (!defender) return;
 
-  // habilidade do defensor (redução de dano)
+  // habilidade: defesa
   let dmgReduction = 0;
   if (defender._ability?.onDefend) {
     const res = defender._ability.onDefend(defender, {});
     dmgReduction += (res?.dmgReduction || 0);
   }
 
-  // dano (escala simples)
   let dmgToDef = Math.max(1, Math.round(attackValue / 600));
   dmgToDef = Math.max(0, dmgToDef - dmgReduction);
 
@@ -568,13 +556,11 @@ function resolveCombat({ attackerSide, attackerId, defenderId=null, direct=false
   let killed = false;
   if (defender.hp <= 0) {
     killed = true;
-    // mover pro cemitério
     D.field = D.field.filter(x => x.id !== defender.id);
     D.grave.push(defender);
     log(`"${defender.name}" foi destruída!`, "bad");
   }
 
-  // afterCombat do atacante
   if (attacker._ability?.afterCombat) {
     const extra = attacker._ability.afterCombat(attacker, { killedDefender: killed });
     if (extra?.faceDamageBonus) {
@@ -620,7 +606,6 @@ function lockGame() {
 
 /** ========= IA ========= **/
 async function aiTakeTurn() {
-  // A IA joga com pequenas pausas pra ficar “vivo”
   state.busy = true;
   renderAll();
 
@@ -629,13 +614,12 @@ async function aiTakeTurn() {
 
   const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
-  // fase main: invocar o que der prioridade custo alto
+  // MAIN: invocar o que der (prioriza custo alto)
   state.phase = "main";
   renderAll();
   await wait(350);
 
-  // tentar invocar até não dar
-  ai.hand.sort((a,b)=>b.cost-a.cost); // prioriza custo alto
+  ai.hand.sort((a,b)=>b.cost-a.cost);
   let invoked = true;
 
   while (invoked) {
@@ -649,27 +633,22 @@ async function aiTakeTurn() {
       playable.exhausted = true;
       ai.field.push(playable);
 
-      log(`IA invocou "${playable.name}" (⚡${playable.cost}).`, "muted");
+      log(`IA conjurou "${playable.name}" (⚡${playable.cost}).`, "muted");
       invoked = true;
       renderAll();
       await wait(350);
     }
   }
 
-  // fase combate
+  // COMBATE
   state.phase = "combat";
-  // desexaustar já foi no começo do turno; as invocadas entram exaustas
   renderAll();
   await wait(300);
 
-  // IA escolhe ataques:
-  // - se tiver alvo fraco, ataca criaturas
-  // - senão, ataca direto se tiver atacante pronto
   for (const attacker of [...ai.field]) {
     if (checkGameOver()) break;
     if (attacker.exhausted) continue;
 
-    // escolher defensor com menor HP primeiro
     const defenders = [...player.field].sort((a,b)=>a.hp-b.hp);
 
     if (defenders.length > 0) {
@@ -682,11 +661,9 @@ async function aiTakeTurn() {
       });
       await wait(350);
     } else {
-      // ataque direto
       resolveCombat({
         attackerSide: "ai",
         attackerId: attacker.id,
-        defenderId: null,
         direct: true,
       });
       await wait(350);
@@ -697,7 +674,7 @@ async function aiTakeTurn() {
   if (!checkGameOver()) endTurn();
 }
 
-/** ========= UI HANDLERS ========= **/
+/** ========= UI ========= **/
 $("btnNewGame").addEventListener("click", async () => {
   await setupNewGame();
 });
@@ -727,7 +704,7 @@ $("btnAttackFace").addEventListener("click", () => {
 async function setupNewGame() {
   resetState();
   $("log").innerHTML = "";
-  log("Gerando decks com imagens aleatórias... (pode demorar alguns segundos)", "muted");
+  log("Gerando decks com imagens aleatórias... (se algumas não carregarem, é bloqueio de hotlink do host)", "muted");
 
   state.busy = true;
   renderAll();
@@ -735,7 +712,6 @@ async function setupNewGame() {
   await buildDeck(state.player);
   await buildDeck(state.ai);
 
-  // mãos iniciais
   for (let i=0;i<GAME.startHand;i++){
     await drawCard("player", true);
     await drawCard("ai", true);
@@ -744,7 +720,6 @@ async function setupNewGame() {
   state.busy = false;
   renderAll();
 
-  // turno inicial do player
   startTurn("player");
 }
 

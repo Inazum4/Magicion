@@ -5,14 +5,6 @@
   --text:#e5e7eb;
   --muted:#a3a3a3;
 
-  --paper:#0b1220;
-  --ink:#eaeaea;
-
-  --common:#6b7280;
-  --rare:#f59e0b;
-  --epic:#a78bfa;
-  --legend:#f472b6;
-
   --blue:#60a5fa;
   --bad:#ef4444;
   --good:#22c55e;
@@ -129,7 +121,9 @@ button.danger{border-color:rgba(239,68,68,0.55); color:#fecaca}
   border-top:1px solid var(--border);
 }
 
-/* ======= MTG CARD ======= */
+.ghost{opacity:0.35}
+
+/* ======= MTG-LIKE CARD ======= */
 .mtg-card{
   width:176px;
   cursor:pointer;
@@ -147,6 +141,8 @@ button.danger{border-color:rgba(239,68,68,0.55); color:#fecaca}
   box-shadow: 0 14px 28px rgba(0,0,0,0.35);
   position:relative;
 }
+
+/* tapped (exausta) */
 .mtg-card.tapped .mtg-frame{
   transform: rotate(-90deg);
   transform-origin: 40% 40%;
@@ -249,7 +245,7 @@ button.danger{border-color:rgba(239,68,68,0.55); color:#fecaca}
 .rarity-épica, .rarity-epica{box-shadow: 0 0 0 2px rgba(167,139,250,0.25) inset}
 .rarity-lendária, .rarity-lendaria{box-shadow: 0 0 0 2px rgba(244,114,182,0.25) inset}
 
-.ghost{opacity:0.35}
+/* mini cemitério */
 .mini .mtg-card{width:110px}
 .mini .mtg-art{height:60px}
 .mini .mtg-textbox{display:none}

@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="referrer" content="no-referrer">
-  <title>Card Duel (MVP - MTG Style)</title>
+  <title>Card Duel (YGO-style)</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <header class="topbar">
-    <div class="title">Card Duel (MVP • MTG Style)</div>
+    <div class="title">Card Duel • YGO-style</div>
     <div class="status">
       <div><b>Turno:</b> <span id="turnOwner">-</span></div>
       <div><b>Fase:</b> <span id="phase">-</span></div>
@@ -39,7 +39,7 @@
 
       <div class="zone">
         <h3>Mão da IA (oculta)</h3>
-        <div class="cardRow ghost" id="aiHandGhost"></div>
+        <div id="aiHandGhost" class="cardRow ghost"></div>
       </div>
     </section>
 
@@ -53,13 +53,14 @@
         <button id="btnEndTurn" class="primary">Finalizar turno</button>
       </div>
 
-      <div class="hint" id="hint">
-        Clique numa carta da sua mão para invocar. Clique numa criatura no seu campo para atacar.
+      <div class="hint">
+        Main: clique na carta da sua mão para invocar. <br/>
+        Combate: clique na sua criatura para selecionar e depois clique em alvo.
       </div>
 
       <div class="targetBox">
         <button id="btnAttackFace" class="danger">Atacar direto (HP da IA)</button>
-        <div class="subhint">Para atacar uma criatura: clique na sua criatura e depois numa criatura inimiga.</div>
+        <div class="subhint">Para atacar criatura: clique no atacante e depois na criatura inimiga.</div>
       </div>
 
       <div class="log" id="log"></div>
@@ -98,7 +99,7 @@
   </main>
 
   <footer class="footer">
-    MVP: turnos, deck, IA, imagens aleatórias (Danbooru). Ajuste tags em <code>game.js</code>.
+    Imagens: Gelbooru (mais fácil de hotlink). Tags no <code>game.js</code>.
   </footer>
 
   <script src="./game.js"></script>

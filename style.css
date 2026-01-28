@@ -1,22 +1,30 @@
 :root{
-  --bg:#070a10;
+  --bg:#07060b;
   --panel:#0f172a;
-  --border:#223047;
+  --border:#27344c;
   --text:#e5e7eb;
   --muted:#a3a3a3;
-
   --blue:#60a5fa;
   --bad:#ef4444;
   --good:#22c55e;
+
+  /* card */
+  --cardBorder:#6b4e16;
+  --cardPaper:#c7a25b;
+  --nameBar:#e8c36b;
+  --nameInk:#1a1207;
+  --boxPaper:#f2e7c9;
+  --boxInk:#1f1609;
+  --star:#ffcc2e;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  background: radial-gradient(1200px 800px at 20% 10%, #111827 0%, var(--bg) 60%);
   color:var(--text);
   font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1000px 700px at 20% 10%, #1b1a2a 0%, var(--bg) 60%);
 }
 
 .topbar{
@@ -27,9 +35,11 @@ body{
   border-bottom:1px solid var(--border);
   background:rgba(15,23,42,0.7);
   backdrop-filter: blur(6px);
-  position:sticky; top:0; z-index:10;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
-.title{font-weight:900; letter-spacing:.4px}
+.title{font-weight:950; letter-spacing:.4px}
 .status{display:flex; gap:18px; color:var(--muted); font-size:14px}
 .status b{color:var(--text)}
 
@@ -50,7 +60,7 @@ body{
 }
 .panel.center{min-height:unset}
 h2{margin:4px 0 10px 0; font-size:18px}
-h3{margin:8px 0; font-size:14px; color:var(--muted); font-weight:800}
+h3{margin:8px 0; font-size:14px; color:var(--muted); font-weight:850}
 
 .hud{
   border:1px solid var(--border);
@@ -58,14 +68,12 @@ h3{margin:8px 0; font-size:14px; color:var(--muted); font-weight:800}
   background:rgba(11,18,32,0.6);
   padding:10px;
 }
-.hudRow{
-  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-}
+.hudRow{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
 .hudRow.small{font-size:13px; color:var(--muted)}
 .hudRow b{color:var(--text)}
 
 .zone{margin-top:10px}
-.cardRow{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; min-height:130px}
+.cardRow{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; min-height:140px}
 
 .controls{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px}
 button{
@@ -75,7 +83,7 @@ button{
   padding:10px 12px;
   border-radius:12px;
   cursor:pointer;
-  font-weight:800;
+  font-weight:850;
 }
 button:hover{filter:brightness(1.06)}
 button:disabled{opacity:0.5; cursor:not-allowed}
@@ -91,6 +99,7 @@ button.danger{border-color:rgba(239,68,68,0.55); color:#fecaca}
   margin-bottom:10px;
   background:rgba(11,18,32,0.35);
 }
+
 .targetBox{
   padding:10px;
   border:1px solid var(--border);
@@ -123,129 +132,143 @@ button.danger{border-color:rgba(239,68,68,0.55); color:#fecaca}
 
 .ghost{opacity:0.35}
 
-/* ======= MTG-LIKE CARD ======= */
-.mtg-card{
-  width:176px;
-  cursor:pointer;
+/* ===== YGO STYLE CARD ===== */
+.ygo-card{
+  width:178px;
   user-select:none;
+  cursor:pointer;
   transition: transform .12s ease, outline .12s ease;
 }
-.mtg-card:hover{transform: translateY(-2px)}
-.mtg-card.selected{outline:2px solid var(--blue); border-radius:16px}
+.ygo-card:hover{transform: translateY(-2px)}
+.ygo-card.selected{outline:2px solid var(--blue); border-radius:14px}
 
-.mtg-frame{
-  border-radius:16px;
+.ygo-frame{
+  border-radius:14px;
   overflow:hidden;
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
-  border:1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(0,0,0,0.20)),
+              radial-gradient(700px 220px at 20% 0%, rgba(255,231,170,0.35), transparent 60%),
+              var(--cardPaper);
+  border:2px solid rgba(107,78,22,0.85);
   box-shadow: 0 14px 28px rgba(0,0,0,0.35);
   position:relative;
 }
 
-/* tapped (exausta) */
-.mtg-card.tapped .mtg-frame{
+.ygo-card.tapped .ygo-frame{
   transform: rotate(-90deg);
   transform-origin: 40% 40%;
 }
 
-.mtg-titlebar{
+.ygo-namebar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:8px 10px;
-  background: linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.04));
-  border-bottom:1px solid rgba(255,255,255,0.08);
+  gap:8px;
+  padding:7px 9px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.08), rgba(255,255,255,0.22)), var(--nameBar);
+  color:var(--nameInk);
+  border-bottom:1px solid rgba(0,0,0,0.15);
 }
-.mtg-title{
+.ygo-name{
   font-weight:950;
   font-size:13px;
-  max-width:125px;
+  max-width:122px;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-.mtg-cost{
-  font-weight:950;
-  font-size:12px;
-  padding:2px 7px;
+.ygo-attr{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  font-weight:900;
+}
+.attr-dot{
+  width:12px;
+  height:12px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(0,0,0,0.25);
+  background:rgba(0,0,0,0.22);
+  border:1px solid rgba(0,0,0,0.25);
+}
+.ygo-level{
+  padding:4px 9px 2px 9px;
+  display:flex;
+  gap:3px;
+  justify-content:flex-end;
+}
+.star{
+  width:10px;
+  height:10px;
+  border-radius:2px;
+  background: radial-gradient(circle at 30% 30%, #fff2b0 0%, var(--star) 40%, #c98700 100%);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.22);
 }
 
-.mtg-art{
-  height:112px;
-  background: rgba(0,0,0,0.25);
+.ygo-art{
+  margin:6px 9px 6px;
+  height:104px;
+  border:2px solid rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.12);
+  overflow:hidden;
 }
-.mtg-art img{
+.ygo-art img{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
-  background:#0b1220;
+  background:#1b1a22;
 }
 
-.mtg-typeline{
+.ygo-type{
+  margin:0 9px 6px;
+  padding:5px 7px;
+  font-size:11px;
+  font-weight:900;
+  color:#2a1b08;
+  background: rgba(255,255,255,0.35);
+  border:1px solid rgba(0,0,0,0.18);
+  border-radius:8px;
   display:flex;
   justify-content:space-between;
   gap:8px;
-  padding:6px 10px;
-  font-size:11px;
-  color:rgba(255,255,255,0.85);
-  border-top:1px solid rgba(255,255,255,0.08);
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  background: rgba(0,0,0,0.18);
 }
-.mtg-type{
+.ygo-type span:first-child{
   max-width:120px;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-.mtg-rarity{
-  font-weight:900;
-  opacity:0.9;
-}
 
-.mtg-textbox{
-  padding:8px 10px 10px;
-  background: rgba(0,0,0,0.16);
-  min-height:86px;
-}
-.mtg-rules{
-  font-size:12px;
-  color:rgba(255,255,255,0.9);
-  line-height:1.25;
-  margin-bottom:8px;
-}
-.mtg-flavor{
-  font-size:11px;
-  color:rgba(255,255,255,0.65);
-  font-style:italic;
-  line-height:1.2;
-}
-
-.mtg-stats{
-  position:absolute;
-  right:8px;
-  bottom:8px;
-}
-.pt{
-  font-weight:950;
-  font-size:12px;
-  padding:3px 7px;
+.ygo-text{
+  margin:0 9px 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.35)), var(--boxPaper);
+  color:var(--boxInk);
+  border:1px solid rgba(0,0,0,0.25);
   border-radius:10px;
-  background:rgba(0,0,0,0.35);
-  border:1px solid rgba(255,255,255,0.12);
+  padding:7px 8px;
+  min-height:70px;
+}
+.ygo-rules{font-size:11px; line-height:1.25; font-weight:700;}
+.ygo-flavor{font-size:10px; opacity:0.8; margin-top:6px; font-style:italic;}
+
+.ygo-stats{
+  margin:0 9px 10px;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  color:#2a1b08;
+  font-weight:950;
+}
+.stat{
+  padding:4px 8px;
+  border-radius:10px;
+  background: rgba(255,255,255,0.40);
+  border:1px solid rgba(0,0,0,0.20);
+  font-size:11px;
 }
 
-/* raridade na borda */
-.rarity-comum{box-shadow: 0 0 0 2px rgba(107,114,128,0.25) inset}
-.rarity-rara{box-shadow: 0 0 0 2px rgba(245,158,11,0.25) inset}
-.rarity-épica, .rarity-epica{box-shadow: 0 0 0 2px rgba(167,139,250,0.25) inset}
-.rarity-lendária, .rarity-lendaria{box-shadow: 0 0 0 2px rgba(244,114,182,0.25) inset}
-
-/* mini cemitério */
-.mini .mtg-card{width:110px}
-.mini .mtg-art{height:60px}
-.mini .mtg-textbox{display:none}
+/* mini grave */
+.mini .ygo-card{width:115px}
+.mini .ygo-art{height:62px}
+.mini .ygo-text{display:none}
+.mini .ygo-level{display:none}
